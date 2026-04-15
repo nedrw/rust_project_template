@@ -1,0 +1,186 @@
+//! 日志模块
+//!
+//! 提供结构化日志功能，基于 tracing 生态
+//!
+//! # 使用方式
+//!
+//! ```rust
+//! use crate::log::{init_logger, LogConfig};
+//!
+//! // 初始化日志（返回 guard 用于控制生命周期）
+//! let _guard = init_logger(LogConfig::default());
+//!
+//! // 使用日志宏
+//! tracing::info!("Application started");
+//! tracing::debug!("Processing request: {}", request_id);
+//! tracing::error!("Failed to connect: {}", error);
+//! ```
+
+use tracing_appender::non_blocking::WorkerGuard;
+use tracing_appender::{non_blocking, rolling::RollingFileAppender};
+use tracing_subscriber::{
+    fmt,
+    layer::SubscriberExt,
+    util::SubscriberInitExt,
+    EnvFilter,
+};
+use std::path::Path;
+
+/// 日志配置
+#[derive(Debug, Clone)]
+pub struct LogConfig {
+    /// 日志级别 (trace, debug, info, warn, error)
+    pub level: String,
+    /// 日志文件存放目录
+    pub dir: String,
+    /// 日志文件名前缀
+    pub prefix: String,
+    /// 最大日志文件数量
+    pub max_files: usize,
+    /// 是否同时输出到控制台
+    pub console: bool,
+    /// 是否使用 JSON 格式
+    pub json: bool,
+}
+
+impl Default for LogConfig {
+    fn default() -> Self {
+        Self {
+            level: "info".to_string(),
+            dir: "./logs".to_string(),
+            prefix: "app".to_string(),
+            max_files: 10,
+            console: true,
+            json: false,
+        }
+    }
+}
+
+/// 初始化日志系统
+///
+/// 返回 WorkerGuard 用于控制日志写入线程的生命周期。
+/// Guard 被 drop 后，日志写入线程将停止工作。
+///
+/// # Example
+///
+/// ```rust
+/// use crate::log::{init_logger, LogConfig};
+///
+/// let _guard = init_logger(LogConfig::default());
+/// tracing::info!("Hello, world!");
+/// ```
+pub fn init_logger(config: LogConfig) -> WorkerGuard {
+    // 创建日志目录
+    if !Path::new(&config.dir).exists() {
+        std::fs::create_dir_all(&config.dir)
+            .expect("Failed to create log directory");
+    }
+
+    // 从环境变量或配置中获取日志级别
+    // RUST_LOG 环境变量优先于配置
+    let env_filter = EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| EnvFilter::new(&config.level));
+
+    // 创建文件 appender（按天轮转）
+    let file_appender = RollingFileAppender::builder()
+        .rotation(tracing_appender::rolling::Rotation::DAILY)
+        .filename_prefix(&config.prefix)
+        .filename_suffix("log")
+        .max_log_files(config.max_files)
+        .build(&config.dir)
+        .expect("Failed to create rolling file appender");
+
+    // 使用非阻塞写入，避免影响性能
+    let (non_blocking_file, guard) = non_blocking(file_appender);
+
+    // 根据配置构建订阅者
+    let registry = tracing_subscriber::registry().with(env_filter);
+
+    // 配置日志格式
+    if config.console && config.json {
+        registry
+            .with(fmt::layer().with_writer(std::io::stdout))
+            .with(fmt::layer().json().with_writer(non_blocking_file))
+            .try_init()
+            .expect("Logger already initialized");
+    } else if config.console {
+        registry
+            .with(fmt::layer().with_writer(std::io::stdout))
+            .with(fmt::layer().with_writer(non_blocking_file))
+            .try_init()
+            .expect("Logger already initialized");
+    } else if config.json {
+        registry
+            .with(fmt::layer().json().with_writer(non_blocking_file))
+            .try_init()
+            .expect("Logger already initialized");
+    } else {
+        registry
+            .with(fmt::layer().with_writer(non_blocking_file))
+            .try_init()
+            .expect("Logger already initialized");
+    }
+
+    tracing::info!(
+        "Logger initialized: level={}, dir={}, prefix={}, max_files={}, console={}, json={}",
+        config.level,
+        config.dir,
+        config.prefix,
+        config.max_files,
+        config.console,
+        config.json
+    );
+
+    guard
+}
+
+/// 初始化简单的控制台日志（用于开发环境）
+///
+/// 返回 guard 用于控制日志线程生命周期。
+pub fn init_simple_logger() -> WorkerGuard {
+    let env_filter = EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| EnvFilter::new("info"));
+
+    let (_stdout, guard) = non_blocking(std::io::stdout());
+
+    tracing_subscriber::registry()
+        .with(env_filter)
+        .with(fmt::layer().with_writer(_stdout))
+        .try_init()
+        .expect("Logger already initialized");
+
+    tracing::info!("Simple logger initialized");
+
+    guard
+}
+
+/// 日志记录宏
+///
+/// 使用 tracing 的日志宏：
+/// - `tracing::trace!`
+/// - `tracing::debug!`
+/// - `tracing::info!`
+/// - `tracing::warn!`
+/// - `tracing::error!`
+///
+/// # 示例
+///
+/// ```rust
+/// tracing::info!("Application started");
+/// tracing::debug!("Processing request: {}", request_id);
+/// tracing::error!("Failed to connect: {}", error);
+/// tracing::warn!("Resource usage high: {}%", usage);
+/// ```
+///
+/// # 结构化日志
+///
+/// ```rust
+/// tracing::info!(
+///     user_id = %user.id,
+///     action = "login",
+///     "User logged in successfully"
+/// );
+/// ```
+pub mod macros {
+    pub use tracing::{debug, error, event, info, instrument, span, trace, warn, Level};
+}

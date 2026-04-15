@@ -1,0 +1,11 @@
+{
+  "app_name": "{{project-name}}",
+  "log": {
+    "level": "info",
+    "dir": "./logs",
+    "prefix": "{{project-name}}",
+    "max_files": 30,
+    "console": true,
+    "json": false
+  }
+}

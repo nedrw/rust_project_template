@@ -1,0 +1,69 @@
+[package]
+name = "{{project-name}}"
+version = "0.1.0"
+authors = ["{{author_name}} <{{author_email}}>"]
+edition = "2021"
+description = "{{project_description}}"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/{{author_name}}/{{project-name}}"
+keywords = ["rust", "template"]
+categories = ["development-tools"]
+
+[dependencies]
+# 错误处理
+thiserror = "*"
+
+{% if use_logging %}
+# 日志系统 - tracing 生态
+tracing = "*"
+tracing-subscriber = { version = "*", features = ["env-filter", "fmt", "json", "registry"] }
+tracing-appender = "*"
+{% endif %}
+
+{% if use_config %}
+# 序列化 - 配置文件需要
+serde = { version = "*", features = ["derive"] }
+serde_json = "*"
+
+{% if config_format == "toml" %}
+toml = "*"
+{% endif %}
+
+{% if config_format == "yaml" %}
+serde_yaml = "*"
+{% endif %}
+
+# 配置文件监听（可选）
+notify = "*"
+{% endif %}
+
+{% if use_cli %}
+# 命令行参数解析
+clap = { version = "*", features = ["derive", "env", "color", "suggestions"] }
+{% endif %}
+
+# 异步运行时（可选，根据需要启用）
+# tokio = { version = "*", features = ["full"] }
+
+[dev-dependencies]
+# 测试相关
+anyhow = "*"
+tempfile = "*"
+
+{% if include_benchmarks %}
+criterion = "*"
+
+[[bench]]
+name = "bench"
+harness = false
+{% endif %}
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 0
+debug = true

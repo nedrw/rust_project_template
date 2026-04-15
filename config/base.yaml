@@ -1,0 +1,21 @@
+# {{project-name}} 配置文件
+# 作者: {{author_name}}
+
+app_name: "{{project-name}}"
+
+log:
+  level: info
+  dir: ./logs
+  prefix: "{{project-name}}"
+  max_files: 30
+  console: true
+  json: false
+
+# 自定义配置示例（根据需要添加）
+# server:
+#   host: "127.0.0.1"
+#   port: 8080
+#
+# database:
+#   url: "postgres://user:pass@localhost/db"
+#   max_connections: 10

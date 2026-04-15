@@ -1,2 +1,64 @@
-/target
-/.idea
+# Rust 构建产物
+/target/
+Cargo.lock
+
+# IDE 和编辑器配置
+/.idea/
+/.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# 日志文件
+/logs/
+*.log
+
+# 测试和临时文件
+/test-output/
+test-*
+*.tmp
+*.bak
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# cargo-generate 模板相关
+/template-example/
+/.template-example/
+
+# 环境配置文件（可能包含敏感信息）
+.env
+.env.local
+.env.*.local
+
+# 性能测试报告
+/criterion/
+
+# 文档生成
+/doc/
+
+# 代码覆盖率报告
+/coverage/
+*.profraw
+*.profdata
+
+# 依赖锁定文件（模板项目建议忽略）
+# 注意：如果你生成的是可执行项目，建议保留 Cargo.lock
+# 如果是库项目，建议忽略
+
+# 其他临时文件
+*.orig
+*.pid
+*.seed
+*.pid.lock
+
+# 说明：
+# 1. target/ - Rust 构建产物，必须忽略
+# 2. Cargo.lock - 模板项目建议忽略，生成的项目会重新生成
+# 3. .idea/, .vscode/ - IDE 配置，不同开发者使用不同 IDE
+# 4. logs/ - 日志文件目录（使用 tracing 时）
+# 5. test-output/ - 测试脚本产生的临时目录
+# 6. template-example/ - 模板示例目录（仅供参考）

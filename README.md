@@ -1,35 +1,43 @@
-# Rust Project Template
+# {{project-name}}
 
-[![Rust Version](https://img.shields.io/badge/Rust-1.60+-blue.svg)](https://www.rust-lang.org)
-
-A ready-to-use template for initializing Rust projects with a standard structure and common configurations. This template is designed to help you start your Rust projects quickly while adhering to best practices.
+{{project_description}}
 
 ---
 
-## Features
+## 项目结构
 
-- **Standard Directory Structure**: Includes `src`, `tests`, `examples`, and more.
-- **Pre-configured `Cargo.toml`**: Common dependencies and configurations are set up.
-- **Linting and Formatting**: Pre-configured with `clippy` and `rustfmt`.
+```
+src/
+├── main.rs              # 主入口
+├── lib.rs               # 库入口
+├── error.rs             # 错误类型
+├── prelude.rs           # 常用导出
+└── optional/            # 可选功能模块
+    ├── cli.rs           # 命令行参数解析
+    ├── config.rs        # 配置文件管理
+    └── log.rs           # 日志系统
+```
 
 ---
 
-## Getting Started
+## 快速开始
 
-### Prerequisites
+```bash
+cargo build
+cargo run -- --help
+```
 
-- [Rust](https://www.rust-lang.org/tools/install) installed on your machine.
+---
 
-### Usage
+## 模板使用
 
-1. **Clone the Template**:
-   ```bash
-   git clone https://github.com/nedrw/rust-project-template.git your-project-name
-   cd your-project-name
-2. **Initialize a New Repository**:
-   ```bash
-   rm -rf .git
-   git init
-3. **Update Project Metadata**:
-   1. Update the Cargo.toml file with your project's name, version, and other details.
-   2. Update the README.md file to reflect your project's description and usage.
+```bash
+cargo install cargo-generate
+cargo generate --git https://github.com/{{author_name}}/{{project-name}}.git
+```
+
+---
+
+## 许可证
+
+MIT OR Apache-2.0

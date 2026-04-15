@@ -1,0 +1,67 @@
+[template]
+cargo_generate_version = ">=0.17.0"
+ignore = [
+    "cargo-generate.toml",
+    "test-template.sh",
+    "test-output",
+    "test-lib",
+    ".git",
+    "target",
+    ".idea",
+    "*.iml"
+]
+
+[conditional.'use_cli == false']
+ignore = ["src/optional/cli"]
+
+[conditional.'use_config == false']
+ignore = ["src/optional/config"]
+
+[conditional.'use_logging == false']
+ignore = ["src/optional/log"]
+
+[placeholders.project_description]
+type = "string"
+prompt = "项目描述"
+default = "A Rust project built with love"
+
+[placeholders.author_name]
+type = "string"
+prompt = "作者名称"
+default = "Your Name"
+
+[placeholders.author_email]
+type = "string"
+prompt = "作者邮箱"
+default = "your.email@example.com"
+
+[placeholders.use_logging]
+type = "bool"
+prompt = "是否启用日志功能 (使用 tracing)?"
+default = true
+
+[placeholders.use_config]
+type = "bool"
+prompt = "是否启用配置文件管理?"
+default = true
+
+[placeholders.use_cli]
+type = "bool"
+prompt = "是否启用命令行参数解析 (使用 clap)?"
+default = true
+
+[placeholders.config_format]
+type = "string"
+prompt = "配置文件格式?"
+choices = ["toml", "yaml", "json"]
+default = "toml"
+
+[placeholders.include_benchmarks]
+type = "bool"
+prompt = "是否包含性能测试示例 (使用 criterion)?"
+default = false
+
+[placeholders.include_examples]
+type = "bool"
+prompt = "是否包含示例代码?"
+default = false
