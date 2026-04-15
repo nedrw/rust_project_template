@@ -40,4 +40,4 @@ cargo generate --git https://github.com/{{author_name}}/{{project-name}}.git
 
 ## 许可证
 
-MIT OR Apache-2.0
+MIT
