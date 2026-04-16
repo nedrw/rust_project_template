@@ -77,29 +77,33 @@ macro_rules! err {
     };
 }
 
-{% if use_logging %}
+/// 提前返回错误的宏（类似 anyhow::bail!）
+///
+/// 用于函数中快速返回错误，不包含日志记录。
+/// 如需记录日志，请先使用 `error!` 等日志宏。
+///
+/// # 示例
+///
+/// ```rust
+/// // 不记录日志，直接返回错误
+/// bail!("操作失败");
+///
+/// // 记录日志 + 返回错误
+/// error!("操作失败");
+/// bail!("操作失败");
+/// ```
 #[macro_export]
-macro_rules! log_err {
+macro_rules! bail {
     ($msg:expr) => {
-        {
-            $crate::prelude::error!("{}", $msg);
-            Err($crate::error::Error::Generic($msg.to_string()))
-        }
+        return Err($crate::err!($msg))
     };
     ($fmt:expr, $($arg:expr),*) => {
-        {
-            let msg = format!($fmt, $($arg),*);
-            $crate::prelude::error!("{}", msg);
-            Err($crate::error::Error::Generic(msg))
-        }
+        return Err($crate::err!($fmt, $($arg),*))
     };
 }
-{% endif %}
 
 pub use crate::err;
-{% if use_logging %}
-pub use crate::log_err;
-{% endif %}
+pub use crate::bail;
 
 #[cfg(test)]
 mod tests {
