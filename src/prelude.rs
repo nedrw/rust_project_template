@@ -7,7 +7,7 @@
 /// - `W`: 包装结构体（用于扩展类型功能）
 ///
 /// {% if use_logging %}
-/// - 日志宏: `info`, `debug`, `warn`, `error`, `trace` (来自 tracing)
+/// - 日志宏: `info`, `debug`, `warn`, `error`, `trace` (来自 log::macros)
 /// {% endif %}
 ///
 /// {% if use_config %}
@@ -60,7 +60,7 @@ where
 }
 
 {% if use_logging %}
-pub use tracing::{debug, error, event, info, instrument, span, trace, warn, Level};
+pub use crate::optional::log::macros::*;
 {% endif %}
 
 {% if use_config %}
