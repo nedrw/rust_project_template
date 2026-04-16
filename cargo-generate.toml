@@ -12,13 +12,13 @@ ignore = [
 ]
 
 [conditional.'use_cli == false']
-ignore = ["src/optional/cli"]
+ignore = ["src/optional/cli.rs"]
 
 [conditional.'use_config == false']
-ignore = ["src/optional/config", "config"]
+ignore = ["src/optional/config.rs", "config"]
 
 [conditional.'use_logging == false']
-ignore = ["src/optional/log"]
+ignore = ["src/optional/log.rs"]
 
 # 根据配置格式忽略不需要的配置文件
 [conditional.'config_format != "toml"']
