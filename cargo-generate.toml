@@ -20,6 +20,9 @@ ignore = ["src/optional/config.rs", "config"]
 [conditional.'use_logging == false']
 ignore = ["src/optional/log.rs"]
 
+[conditional.'include_benchmarks == false']
+ignore = ["benches"]
+
 # 根据配置格式忽略不需要的配置文件
 [conditional.'config_format != "toml"']
 ignore = ["config/base.toml"]
@@ -69,9 +72,4 @@ default = true
 [placeholders.include_benchmarks]
 type = "bool"
 prompt = "是否包含性能测试示例 (使用 criterion)?"
-default = false
-
-[placeholders.include_examples]
-type = "bool"
-prompt = "是否包含示例代码?"
 default = false
