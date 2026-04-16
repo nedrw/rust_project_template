@@ -1,13 +1,13 @@
 // Optional modules - conditionally included based on template configuration
 
-{% if use_cli %}
+{%- if use_cli %}
 pub mod cli;
-{% endif %}
+{% endif -%}
 
-{% if use_config %}
+{%- if use_config %}
 pub mod config;
-{% endif %}
+{% endif -%}
 
-{% if use_logging %}
+{%- if use_logging %}
 pub mod log;
-{% endif %}
+{% endif -%}

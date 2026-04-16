@@ -12,35 +12,35 @@ categories = ["development-tools"]
 [dependencies]
 # 错误处理
 thiserror = "*"
+{%- if use_logging %}
 
-{% if use_logging %}
 # 日志系统 - tracing 生态
 tracing = "*"
 tracing-subscriber = { version = "*", features = ["env-filter", "fmt", "json", "registry"] }
 tracing-appender = "*"
-{% endif %}
+{%- endif %}
+{%- if use_config %}
 
-{% if use_config %}
 # 序列化 - 配置文件需要
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"
+{%- if config_format == "toml" %}
 
-{% if config_format == "toml" %}
 toml = "*"
-{% endif %}
+{%- endif %}
+{%- if config_format == "yaml" %}
 
-{% if config_format == "yaml" %}
 serde_yaml = "*"
-{% endif %}
+{%- endif %}
 
 # 配置文件监听（可选）
 notify = "*"
-{% endif %}
+{%- endif %}
+{%- if use_cli %}
 
-{% if use_cli %}
 # 命令行参数解析
 clap = { version = "*", features = ["derive", "env", "color", "suggestions"] }
-{% endif %}
+{%- endif %}
 
 # 异步运行时（可选，根据需要启用）
 # tokio = { version = "*", features = ["full"] }
@@ -49,14 +49,14 @@ clap = { version = "*", features = ["derive", "env", "color", "suggestions"] }
 # 测试相关
 anyhow = "*"
 tempfile = "*"
+{%- if include_benchmarks %}
 
-{% if include_benchmarks %}
 criterion = "*"
 
 [[bench]]
 name = "bench"
 harness = false
-{% endif %}
+{%- endif %}
 
 [profile.release]
 opt-level = 3

@@ -1,4 +1,4 @@
-{% if use_config %}
+{%- if use_config %}
 use serde::Deserialize;
 use std::path::Path;
 use std::sync::OnceLock;
@@ -12,10 +12,11 @@ pub struct AppConfig {
     #[serde(default = "default_app_name")]
     pub app_name: String,
 
-    {% if use_logging %}
+    {%- if use_logging %}
+
     /// 日志配置
     pub log: LogConfig,
-    {% endif %}
+    {%- endif %}
 
     /// 其他自定义配置（扩展字段）
     #[serde(flatten)]
@@ -26,7 +27,8 @@ fn default_app_name() -> String {
     "{{project-name}}".to_string()
 }
 
-{% if use_logging %}
+{%- if use_logging %}
+
 /// 日志配置（适配 tracing）
 #[derive(Deserialize, Debug, Clone)]
 pub struct LogConfig {
@@ -87,15 +89,15 @@ impl Default for LogConfig {
         }
     }
 }
-{% endif %}
+{%- endif %}
 
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
             app_name: default_app_name(),
-            {% if use_logging %}
+            {%- if use_logging %}
             log: LogConfig::default(),
-            {% endif %}
+            {%- endif %}
             extra: None,
         }
     }
@@ -105,17 +107,20 @@ impl Default for AppConfig {
 pub fn load_config<P: AsRef<Path>>(path: P) -> Result<AppConfig, Box<dyn std::error::Error>> {
     let content = std::fs::read_to_string(path.as_ref())?;
 
-    {% if config_format == "toml" %}
+    {%- if config_format == "toml" %}
+
     let config: AppConfig = toml::from_str(&content)?;
-    {% endif %}
+    {%- endif %}
 
-    {% if config_format == "yaml" %}
+    {%- if config_format == "yaml" %}
+
     let config: AppConfig = serde_yaml::from_str(&content)?;
-    {% endif %}
+    {%- endif %}
 
-    {% if config_format == "json" %}
+    {%- if config_format == "json" %}
+
     let config: AppConfig = serde_json::from_str(&content)?;
-    {% endif %}
+    {%- endif %}
 
     Ok(config)
 }
@@ -135,7 +140,8 @@ pub fn init_config(path: &str) -> &'static AppConfig {
 pub fn config() -> &'static AppConfig {
     CONFIG.get().expect("Config not initialized. Call init_config() first.")
 }
-{% else %}
+{%- else %}
+
 // 当不使用配置功能时，提供空实现
 pub struct AppConfig;
 
@@ -146,22 +152,24 @@ pub fn init_config(_path: &str) -> &'static AppConfig {
 pub fn config() -> &'static AppConfig {
     &AppConfig
 }
-{% endif %}
+{%- endif %}
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    {% if use_config %}
+    {%- if use_config %}
+
     #[test]
     fn test_default_config() {
         let config = AppConfig::default();
         assert_eq!(config.app_name, "{{project-name}}");
 
-        {% if use_logging %}
+        {%- if use_logging %}
+
         assert_eq!(config.log.level, "info");
         assert_eq!(config.log.dir, "./logs");
-        {% endif %}
+        {%- endif %}
     }
 
     #[test]
@@ -169,5 +177,5 @@ mod tests {
         let config = load_config("nonexistent.toml");
         assert!(config.is_err());
     }
-    {% endif %}
+    {%- endif %}
 }
