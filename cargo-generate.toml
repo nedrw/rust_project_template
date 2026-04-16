@@ -15,10 +15,20 @@ ignore = [
 ignore = ["src/optional/cli"]
 
 [conditional.'use_config == false']
-ignore = ["src/optional/config"]
+ignore = ["src/optional/config", "config"]
 
 [conditional.'use_logging == false']
 ignore = ["src/optional/log"]
+
+# 根据配置格式忽略不需要的配置文件
+[conditional.'config_format != "toml"']
+ignore = ["config/base.toml"]
+
+[conditional.'config_format != "yaml"']
+ignore = ["config/base.yaml"]
+
+[conditional.'config_format != "json"']
+ignore = ["config/base.json"]
 
 [placeholders.project_description]
 type = "string"
@@ -45,16 +55,16 @@ type = "bool"
 prompt = "是否启用配置文件管理?"
 default = true
 
+[placeholders.config_format]
+type = "string"
+prompt = "如果启用配置，首选格式?"
+choices = ["toml", "yaml", "json"]
+default = "toml"
+
 [placeholders.use_cli]
 type = "bool"
 prompt = "是否启用命令行参数解析 (使用 clap)?"
 default = true
-
-[placeholders.config_format]
-type = "string"
-prompt = "配置文件格式?"
-choices = ["toml", "yaml", "json"]
-default = "toml"
 
 [placeholders.include_benchmarks]
 type = "bool"
