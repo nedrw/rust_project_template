@@ -55,6 +55,9 @@ Desktop.ini
 *.seed
 *.pid.lock
 
+# 外部参考示例（仅本地参考，不纳入版本控制）
+/examples/
+
 # 说明：
 # 1. target/ - Rust 构建产物，必须忽略
 # 2. Cargo.lock - 模板项目建议忽略，生成的项目会重新生成
