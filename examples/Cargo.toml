@@ -1,0 +1,22 @@
+[package]
+name = "examples"
+version = { workspace = true }
+edition = { workspace = true }
+repository = { workspace = true }
+publish = false
+
+[package.metadata.release]
+release = false
+
+[dev-dependencies]
+anyhow = { workspace = true }
+foundations = { workspace = true, features = ["default"] }
+futures-util = { workspace = true }
+http-body-util = { workspace = true }
+hyper = { workspace = true }
+hyper-util = { workspace = true, features = ["server", "tokio"] }
+tokio = { workspace = true, features = ["full"]}
+
+[[example]]
+name = "http_server"
+path = "http_server/main.rs"
