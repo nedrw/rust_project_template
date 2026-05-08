@@ -5,38 +5,27 @@ ignore = [
     "test-template.sh",
     "test-output",
     "test-lib",
+    "examples",
     ".git",
     "target",
     ".idea",
     "*.iml"
 ]
 
-[conditional.'use_cli == false']
-ignore = ["src/optional/cli.rs"]
+# Conditional file inclusion: settings module
+[conditional.'use_cli == false && use_settings == false']
+ignore = ["src/settings.rs"]
 
-[conditional.'use_config == false']
-ignore = ["src/optional/config.rs", "config"]
+# Conditional file inclusion: telemetry module (bundled with logging/tracing)
+[conditional.'use_logging == false && use_tracing == false']
+ignore = ["src/telemetry.rs", "src/metrics.rs"]
 
-[conditional.'use_logging == false']
-ignore = ["src/optional/log.rs"]
-
-[conditional.'include_benchmarks == false']
-ignore = ["benches"]
-
-# 根据配置格式忽略不需要的配置文件
-[conditional.'config_format != "toml"']
-ignore = ["config/base.toml"]
-
-[conditional.'config_format != "yaml"']
-ignore = ["config/base.yaml"]
-
-[conditional.'config_format != "json"']
-ignore = ["config/base.json"]
+# === Placeholders ===
 
 [placeholders.project_description]
 type = "string"
 prompt = "项目描述"
-default = "A Rust project built with love"
+default = "A Rust service built with Foundations"
 
 [placeholders.author_name]
 type = "string"
@@ -50,26 +39,25 @@ default = "your.email@example.com"
 
 [placeholders.use_logging]
 type = "bool"
-prompt = "是否启用日志功能 (使用 tracing)?"
+prompt = "是否接入日志 (foundations logging)? 开启后会附带遥测服务端和指标功能"
 default = true
 
-[placeholders.use_config]
+[placeholders.use_tracing]
 type = "bool"
-prompt = "是否启用配置文件管理?"
-default = true
+prompt = "是否开启分布式追踪 (foundations tracing)? 开启后会附带遥测服务端和指标功能"
+default = false
 
-[placeholders.config_format]
-type = "string"
-prompt = "如果启用配置，首选格式?"
-choices = ["toml", "yaml", "json"]
-default = "toml"
+[placeholders.use_jemalloc]
+type = "bool"
+prompt = "是否使用 jemalloc 内存分配器 (生产级服务推荐)?"
+default = false
+
+[placeholders.use_settings]
+type = "bool"
+prompt = "是否配置自文档化设置 (foundations settings, 自动生成带文档的 YAML 配置)?"
+default = true
 
 [placeholders.use_cli]
 type = "bool"
-prompt = "是否启用命令行参数解析 (使用 clap)?"
+prompt = "是否提供 CLI 模块 (foundations cli, 含 --help 和配置生成, 启用后将自动包含 settings)?"
 default = true
-
-[placeholders.include_benchmarks]
-type = "bool"
-prompt = "是否包含性能测试示例 (使用 criterion)?"
-default = false
